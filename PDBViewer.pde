@@ -40,7 +40,7 @@ void draw() {
   // with (0,0,0) in the middle.
   translate(width/2, height/2, 5);
   // Each time, rotate along the x-axis slightly.
-  mouseReleased();  
+  mouseMoved(); 
   rotateX(x*PI/360);
   rotateY(-x*PI/360); 
   x++;
@@ -56,9 +56,8 @@ void draw() {
   translate(-width/2, -height/2, -5);
 }
 
-void mouseReleased() {
-    if (mousePressed) {
+//if the user moves mouse over the screen, they can control the rotation of the model 
+void mouseMoved() {
     rotateY(mouseY*PI/360); 
     rotateX(-mouseX*PI/360);
-  }
 }

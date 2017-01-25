@@ -53,7 +53,7 @@ void draw() {
     atoms.get(i).drawAtom();
     atoms.get(i).drawConnections();
   }
-  
+  translate(-width/2, -height/2, -5);
 }
 
 void mouseReleased() {

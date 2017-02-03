@@ -1,5 +1,6 @@
 
 /* Thania Kendrick 
+
  This class is used to parse through the pdb file provided by the user, the pdb file contains a molecule and gives the coordinates and types of atoms that 
  are in that molecule as well as the atoms that are connected to each other  
  */
@@ -14,20 +15,21 @@ public class PDBUtils {
   private float x;
   private float y; 
   private float z; 
-  private String type; 
+  private Type type; 
 
   //file sent to constructor from PDBViewer class 
   public PDBUtils(File pdb) throws IOException {   
-    this.type = "";
     this.atomName = "";
     this.atomNumber=0;
     this.x =0;
     this.y=0;
     this.z=0;
+    //send file to getAtoms method 
     getAtoms(pdb);
   }
 
   public ArrayList<Atom> getAtoms(File f) throws IOException {
+    //atoms array will contain the coordinates and type of atoms in the molecule 
     ArrayList<Atom> atoms = new ArrayList<Atom>();
     Scanner input = new Scanner(f);
     String checkIfAtom = "";
@@ -40,14 +42,15 @@ public class PDBUtils {
           atomNumber = ls.nextInt(); 
           this.atomName = ls.next(); 
           //store different types of atom types (carbon,hydrogen, nitrogen,oxygen) to type variable 
+          //only looking at first char because sometimes the file contains numbers after the atom that are not relevant for this model 
           if (atomName.charAt(0) == 'C') {
-            this.type = "CARBON";
+            this.type = Type.CARBON;
           } else if (atomName.charAt(0) == 'H') {
-            this.type= "HYDROGEN";
+            this.type= Type.HYDROGEN;
           } else if (atomName.charAt(0) == 'N') {
-            this.type= "NITROGEN";
+            this.type= Type.NITROGEN;
           } else {
-            this.type= "OXYGEN";
+            this.type= Type.OXYGEN;
           }
           ls.next();
           ls.next();
@@ -60,7 +63,7 @@ public class PDBUtils {
         }
         //if line of file says "CONECT" parse through file section to get connections 
         if (checkIfAtom.equals("CONECT")) {
-          //new ArrayList every time it you come accross the CONECT string.
+          //new ArrayList every time we come accross the CONECT string.
           List<double[]> others = new ArrayList<double[]>();
           int from = ls.nextInt(); 
           while (ls.hasNextInt()) {

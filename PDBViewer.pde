@@ -1,5 +1,5 @@
 /*This class asks the user for their pdb file, sets the background, and draws each atom  
-*/
+ */
 
 boolean fileChosen=false;
 PDBUtils pdb; 
@@ -8,7 +8,6 @@ ArrayList<Atom> atoms;
 
 void settings() {
   size(650, 650, P3D);
-  
 }
 void setup() {
   selectInput("Select a file to process:", "fileSelected", dataFile("name_of_file"));
@@ -23,8 +22,7 @@ void fileSelected(File selection) throws IOException {
   String file = ""+selection; 
   if (selection == null) {
     println("Window was closed or the user hit cancel.");
-  } 
-    else if (file.contains("pdb")){
+  } else if (file.contains("pdb")) {
     //  get the information from this file.
     println("User selected " + selection.getAbsolutePath());
     PDBUtils pdb = new PDBUtils(selection);
@@ -32,10 +30,9 @@ void fileSelected(File selection) throws IOException {
     // true so the program knows
     // when to draw it.
     fileChosen = true;
-  }
-  else {
+  } else {
     println("The file you have entered does not work with this program, please insert a pdb file instead."); 
-    println("Some sample pdb files may be found here: http://www-jmg.ch.cam.ac.uk/data/"); 
+    println("Some sample pdb files may be found here: http://www-jmg.ch.cam.ac.uk/data/");
   }
 }
 
@@ -47,10 +44,10 @@ void draw() {
   translate(width/2, height/2, 5);
   // Each time, rotate along the x-axis slightly.
   mouseMoved(); 
-  if (!mousePressed){
-  rotateX(x*PI/360);
-  rotateY(-x*PI/360); 
-  x++;
+  if (!mousePressed) {
+    rotateX(x*PI/360);
+    rotateY(-x*PI/360); 
+    x++;
   }
   // If the atoms are not valid, quit early.
   if (!fileChosen) return;
@@ -65,10 +62,9 @@ void draw() {
 
 //if the user clicks on the screen, they can control the rotation of the model 
 void mouseMoved() {
-    rotateY(mouseY*PI/360); 
-    rotateX(-mouseX*PI/360);
+  rotateY(mouseY*PI/360); 
+  rotateX(-mouseX*PI/360);
 }
 
-void mousePressed(){
-  
+void mousePressed() {
 }

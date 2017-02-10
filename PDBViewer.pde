@@ -5,6 +5,7 @@ boolean fileChosen=false;
 PDBUtils pdb; 
 float x;
 ArrayList<Atom> atoms;
+boolean writeText = false; 
 
 void settings() {
   size(650, 650, P3D);
@@ -31,9 +32,14 @@ void fileSelected(File selection) throws IOException {
     // when to draw it.
     fileChosen = true;
   } else {
-    println("The file you have entered does not work with this program, please insert a pdb file instead."); 
-    println("Some sample pdb files may be found here: http://www-jmg.ch.cam.ac.uk/data/");
+    writeText = true;
   }
+}
+
+void textMessage() {
+  textSize(35); 
+  textAlign(CENTER); 
+  text("Please insert a pdb file instead.", width/2, height/2); 
 }
 
 void draw() {
@@ -41,23 +47,27 @@ void draw() {
   background(10, 35, 35);
   //allows to draw things as if the screen was centered
   // with (0,0,0) in the middle.
-  translate(width/2, height/2, 5);
-  // Each time, rotate along the x-axis slightly.
-  mouseMoved(); 
-  if (!mousePressed) {
-    rotateX(x*PI/360);
-    rotateY(-x*PI/360); 
-    x++;
-  }
-  // If the atoms are not valid, quit early.
-  if (!fileChosen) return;
+  if (writeText) {
+    textMessage();
+  } else {
+    translate(width/2, height/2, 5);
+    // Each time, rotate along the x-axis slightly.
+    mouseMoved(); 
+    if (!mousePressed) {
+      rotateX(x*PI/360);
+      rotateY(-x*PI/360); 
+      x++;
+    }
+    // If the atoms are not valid, quit early.
+    if (!fileChosen) return;
 
-  // Now, draw each atom and its connections.
-  for (int i=0; i<atoms.size(); i++) {
-    atoms.get(i).drawAtom();
-    atoms.get(i).drawConnections();
+    // Now, draw each atom and its connections.
+    for (int i=0; i<atoms.size(); i++) {
+      atoms.get(i).drawAtom();
+      atoms.get(i).drawConnections();
+    }
+    translate(-width/2, -height/2, -5);
   }
-  translate(-width/2, -height/2, -5);
 }
 
 //if the user clicks on the screen, they can control the rotation of the model 

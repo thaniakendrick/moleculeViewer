@@ -1,74 +1,100 @@
-/*This class asks the user for their pdb file, sets the background, and draws each atom  
-*/
 
-boolean fileChosen=false;
-PDBUtils pdb; 
-float x;
-ArrayList<Atom> atoms;
+/* Thania Kendrick 
+ 
+ This class is used to parse through the pdb file provided by the user, the pdb file contains a molecule and gives the coordinates and types of atoms that 
+ are in that molecule as well as the atoms that are connected to each other  
+ */
 
-void settings() {
-  size(650, 650, P3D);
-  
-}
-void setup() {
-  selectInput("Select a file to process:", "fileSelected", dataFile("name_of_file"));
-  x = 0;
-  smooth();
-  noStroke();
-}
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
-// This function is called after the sure has selected a valid value.
-void fileSelected(File selection) throws IOException {
-  // Make sure they didn't press cancel or close the window
-  String file = ""+selection; 
-  if (selection == null) {
-    println("Window was closed or the user hit cancel.");
-  } 
-    else if (file.contains("pdb")){
-    //  get the information from this file.
-    println("User selected " + selection.getAbsolutePath());
-    PDBUtils pdb = new PDBUtils(selection);
-    atoms = pdb.getAtoms(selection);
-    // true so the program knows
-    // when to draw it.
-    fileChosen = true;
+public class PDBUtils {
+  private String atomName; 
+  private int atomNumber; 
+  private float x;
+  private float y; 
+  private float z; 
+  private Type type; 
+
+  //file sent to constructor from PDBViewer class 
+  public PDBUtils(File pdb) throws IOException {   
+    this.atomName = "";
+    this.atomNumber=0;
+    this.x =0;
+    this.y=0;
+    this.z=0;
+    //send file to getAtoms method 
+    tryCatch(pdb);
   }
-  else {
-    println("The file you have entered does not work with this program, please insert a pdb file instead."); 
-    println("Some sample pdb files may be found here: http://www-jmg.ch.cam.ac.uk/data/"); 
+
+  public void tryCatch(File f) throws IOException {
+    try {
+      getAtoms(f);
+    }
+    catch(IOException e) {
+      System.out.println("Caught IOException: " + e.getMessage());
+    }
   }
-}
 
-void draw() {
-  tint(10);
-  background(10, 35, 35);
-  //allows to draw things as if the screen was centered
-  // with (0,0,0) in the middle.
-  translate(width/2, height/2, 5);
-  // Each time, rotate along the x-axis slightly.
-  mouseMoved(); 
-  if (!mousePressed){
-  rotateX(x*PI/360);
-  rotateY(-x*PI/360); 
-  x++;
+
+  public ArrayList<Atom> getAtoms(File f) throws IOException {
+    //atoms array will contain the coordinates and type of atoms in the molecule 
+    ArrayList<Atom> atoms = new ArrayList<Atom>();
+    Scanner input = new Scanner(f);
+    String checkIfAtom = "";
+    while (input.hasNextLine()) {
+      Scanner ls = new Scanner(input.nextLine());     
+      while (ls.hasNext()) {
+        checkIfAtom = ls.next(); 
+        //if line of file says ATOM or HETATM then parse through file section for atom type and coordinates 
+        if (checkIfAtom.equals("ATOM") || checkIfAtom.equals("HETATM")) {
+          atomNumber = ls.nextInt(); 
+          this.atomName = ls.next(); 
+          //store different types of atom types (carbon,hydrogen, nitrogen,oxygen) to type variable 
+          //only looking at first char because sometimes the file contains numbers after the atom that are not relevant for this model  
+          switch(this.atomName.charAt(0)) {
+          case 'C': 
+            this.type = Type.CARBON;         
+            break; 
+          case 'H':
+            this.type= Type.HYDROGEN;
+            break;
+          case 'N':
+            this.type = Type.NITROGEN; 
+            break; 
+          default: 
+            this.type = Type.OXYGEN; 
+            break;
+          }
+          ls.next();
+          ls.next();
+          //store coordinates 
+          this.x = ls.nextFloat();
+          this.y = ls.nextFloat();
+          this.z = ls.nextFloat();
+          //add coordinates and atom type to atoms array and pass to Atom class
+          atoms.add(new Atom(this.type, this.x, this.y, this.z));
+        }
+        //if line of file says "CONECT" parse through file section to get connections 
+        if (checkIfAtom.equals("CONECT")) {
+          //new ArrayList every time we come accross the CONECT string.
+          List<double[]> others = new ArrayList<double[]>();
+          int from = ls.nextInt(); 
+          while (ls.hasNextInt()) {
+            int num = ls.nextInt();
+            // grab the coordinates from atom array list at index num-1
+            double[] positions = atoms.get(num-1).getPosition();
+            // add this to the others array list
+            others.add(positions);
+          }      
+          //pass others array to Atom method, setConnections, at the atoms array index, from-1
+          atoms.get(from-1).setConnections(others);
+        }
+      }
+      ls.close();
+    }
+    input.close();
+    return atoms;
   }
-  // If the atoms are not valid, quit early.
-  if (!fileChosen) return;
-
-  // Now, draw each atom and its connections.
-  for (int i=0; i<atoms.size(); i++) {
-    atoms.get(i).drawAtom();
-    atoms.get(i).drawConnections();
-  }
-  translate(-width/2, -height/2, -5);
-}
-
-//if the user clicks on the screen, they can control the rotation of the model 
-void mouseMoved() {
-    rotateY(mouseY*PI/360); 
-    rotateX(-mouseX*PI/360);
-}
-
-void mousePressed(){
-  
 }

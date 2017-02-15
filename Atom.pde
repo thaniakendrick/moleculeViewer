@@ -1,7 +1,7 @@
 /*This class gets passed the coordinates, connections, and atom types from the PDBUtil class
  it then uses this information to define the size of each atom, the color, and shape. It also 
  sets up the connections between the atoms. 
- */
+*/
 
 import java.util.*;
 
@@ -21,24 +21,42 @@ public  class Atom {
     this.y = yCoordinate*60;
     this.z = zCoordinate*60; 
     this.type = type; 
+    
     //radius in angstrom and colors used are conventional colors (those colors used for ochem models) 
-    if (this.type.equals(Type.HYDROGEN)) {
-     this.radius = Type.HYDROGEN.radius(); 
-     //white
-     this.atomColor = color(255, 255, 255);
-     } else if (this.type.equals(Type.CARBON)) {
-     this.radius = Type.CARBON.radius();
-     //light black 
-     this.atomColor = color(33, 47, 60);
-     } else if (this.type.equals(Type.OXYGEN)) {
-     this.radius = Type.OXYGEN.radius();
-     //light red 
-     this.atomColor = color(205, 97, 85);
-     } else {
-     this.radius = Type.NITROGEN.radius(); ;
-     //light blue
-     this.atomColor = color(52, 152, 219);
-     }
+    switch (this.type) {
+    case HYDROGEN:
+      {
+        //if hydrogen the radius given is 53/5
+        this.radius = Type.HYDROGEN.radius();
+        //white if hydrogen 
+        this.atomColor = color(255, 255, 255);
+        break;
+      }
+    case CARBON:
+      {
+        //if carbon radius is 67/5
+        this.radius = Type.CARBON.radius();
+        //light black if carbon 
+        this.atomColor = color(33, 47, 60);
+        break;
+      }
+    case OXYGEN:
+      {
+        //if oxygen radius is 48/5
+        this.radius = Type.OXYGEN.radius();
+        //light red if oxygen
+        this.atomColor = color(205, 97, 85);
+        break;
+      }
+    case NITROGEN:
+      {
+        //if nitrogen radius is 149/5
+        this.radius = Type.NITROGEN.radius();
+        //light blue if nitrogen 
+        this.atomColor = color(52, 152, 219);
+        break;
+      }
+    }
   } 
 
   // Will set the connections to be the requested ones.
@@ -86,8 +104,11 @@ public  class Atom {
         }
       }
       stroke(7); 
+      //determines thickness of lines 
       strokeWeight(5);  
+      //fills lines with a specific color 
       fill(213, 216, 220);
+      //connects points to create a line 
       line(this.x, this.y, this.z, connectX, connectY, connectZ);
     }
   }

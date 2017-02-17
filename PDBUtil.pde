@@ -24,18 +24,8 @@ public class PDBUtils {
     this.y=0;
     this.z=0;
     //send file to getAtoms method 
-    tryCatch(pdb);
+    getAtoms(pdb);
   }
-
-  public void tryCatch(File f) throws IOException {
-    try {
-      getAtoms(f);
-    }
-    catch(IOException e) {
-      System.out.println("Caught IOException: " + e.getMessage());
-    }
-  }
-
 
   public ArrayList<Atom> getAtoms(File f) throws IOException {
     //atoms array will contain the coordinates and type of atoms in the molecule 
